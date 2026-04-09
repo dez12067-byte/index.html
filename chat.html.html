@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>智能客服</h2>
+
+<input id="msg" placeholder="输入问题">
+<button onclick="send()">发送</button>
+
+<p id="reply"></p >
+
+<script>
+async function send() {
+  const message = document.getElementById("msg").value;
+
+  try {
+    const res = await fetch("https://api.dify.ai/v1/chat-messages", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer app-qIYlD8PblyT4AKYHlYJId6t2",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        inputs: {},
+        query: message,
+        response_mode: "blocking",
+        user: "user-1"
+      })
+    });
+
+    const data = await res.json();
+
+    // 👉 打印看看真实返回（调试用）
+    console.log("返回数据：", data);
+
+    // 👉 万能取值（不管你是Q&A还是工作流都能拿到）
+    let reply =
+      data.answer ||
+      (data.data && data.data.answer) ||
+      (data.outputs && data.outputs.text) ||
+      JSON.stringify(data);
+
+    document.getElementById("reply").innerText = reply;
+
+  } catch (error) {
+    console.error("错误：", error);
+    document.getElementById("reply").innerText = "请求失败（可能被墙）";
+  }
+}
+</script>
+
+</body>
+</html>
